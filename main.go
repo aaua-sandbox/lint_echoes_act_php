@@ -28,12 +28,17 @@ func main() {
 
 	cmd := exec.Command("./vendor/bin/phpcs", "--report=json", "--standard=PSR2", "hello.php")
 	fmt.Println("ExecCmd: " + strings.Join(cmd.Args, " "))
-	out, err := cmd.Output()
-	fmt.Println(string(out))
+	json, err := cmd.Output()
+	fmt.Println(string(json))
 
+	// JSON format
+	_ = ConvertJSONToLintEchoesFormat(json, wDir)
+}
+
+func ConvertJSONToLintEchoesFormat(json []byte, wDir string) []byte {
 	fmt.Println("- Result phpcs ------------")
-	v, err := jason.NewObjectFromBytes(out)
-	files, err := v.GetObject("files")
+	v, _ := jason.NewObjectFromBytes(json)
+	files, _ := v.GetObject("files")
 	for key := range files.Map() {
 		fileName := strings.Replace(key, wDir+"/", "", 1)
 		fmt.Println("-- " + fileName + ": ")
@@ -46,15 +51,6 @@ func main() {
 			fmt.Println(string(line) + ": " + typ + ": " + msg)
 		}
 	}
-	var json string = ""
-
-	// JSON format
-	var fmt_json string = ConvertJSONToLintEchoesFormat(json)
-	fmt.Println(fmt_json)
-}
-
-func ConvertJSONToLintEchoesFormat(json string) string {
-	// var cnv_json string
 
 	return json
 }
