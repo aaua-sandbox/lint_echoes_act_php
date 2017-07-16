@@ -27,8 +27,10 @@ func main() {
 	// TODO: send status to slack
 
 	// make tmp dir
-	if err := os.Mkdir("./tmp", 0777); err != nil {
-		fmt.Println(err)
+	if !isExist("./tmp") {
+		if err := os.Mkdir("./tmp", 0777); err != nil {
+			fmt.Println(err)
+		}
 	}
 	if err := os.RemoveAll("./tmp/src"); err != nil {
 		fmt.Println(err)
@@ -78,6 +80,11 @@ func main() {
 	// TODO: ResultComment to PullReq
 
 	// TODO: send status to slack
+}
+
+func isExist(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
 }
 
 func ConvertJSONToLintEchoesFormat(json []byte, wDir string) (LintEchoesFormat, error) {
